@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Panel</title>
+    <link rel="stylesheet" href="/static/css/admin.css">
+</head>
+<body>
+
+    <div class="header">
+        <h2>Admin Panel - Products</h2>
+        <div>
+            <button class="primary-btn" onclick="openUserModal()">Users</button>
+            <button class="logout-btn" onclick="logout()">Logout</button>
+        </div>
+    </div>
+    
+    <div class="form-card">
+        <div class="form-grid">
+            <input id="name" placeholder="Product Name"  autocomplete="off">
+            <input id="price" placeholder="Price"  autocomplete="off">
+            <input id="barcode" placeholder="Barcode"  autocomplete="off">
+            <input id="gst" placeholder="GST %"  autocomplete="off">
+            <input id="stock"  placeholder="Stock" type="number" autocomplete="off">
+        </div>
+    
+        <button class="primary-btn" onclick="addOrUpdateProduct()">Save Product</button>
+        <p id="msg"></p>
+    </div>
+    
+    <div class="table-card">
+        <h3 style="margin-bottom: 10px;">Products List</h3>
+    
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Price</th>
+                    <th>Barcode</th>
+                    <th>GST</th>
+                    <th>Stock</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="list"></tbody>
+        </table>
+    </div>
+
+    
+
+<script src="/static/js/api.js"></script>
+<script>
+
+const token = localStorage.getItem("access_token");
+
+if (!token) {
+    window.location.href = "/";
+}
+
+let editId = null;
+
+// 🔹 LOAD PRODUCTS
+async function loadProducts() {
+    const res = await apiRequest("/products");
+    const data = await res.json();
+
+    let list = document.getElementById("list");
+    list.innerHTML = "";
+
+    data.forEach(p => {
+        list.innerHTML += `
+        <tr>
+            <td>${p.id}</td>
+            <td>${p.name}</td>
+            <td>${p.price}</td>
+            <td>${p.barcode}</td>
+            <td>${p.gst}</td>
+            <td>${p.stock}</td>
+            <td>
+               <button class="action-btn edit-btn" onclick="editProduct(${p.id}, \`${p.name}\`, ${p.price}, \`${p.barcode}\`, ${p.gst}, ${p.stock})">Edit</button>
+                <button class="action-btn delete-btn" onclick="deleteProduct(${p.id})">Delete</button>
+            </td>
+        </tr>
+        `;
+    });
+}
+
+async function loadUsers() {
+    const res = await apiRequest("/users");
+    const data = await res.json();
+
+    if (!res.ok) {
+    alert("Failed to load users");
+    return;
+}
+
+    let list = document.getElementById("usersList");
+    list.innerHTML = "";
+
+    data.forEach(u => {
+        list.innerHTML += `
+        <tr>
+            <td>${u.id}</td>
+            <td>${u.username}</td>
+            <td>${u.role}</td>
+            <td>
+                ${
+                    u.role !== "admin"
+                    ? `<button class="action-btn delete-btn" onclick="deleteUser(${u.id})">Delete</button>`
+                    : `<span style="color:gray;">Protected</span>`
+                }
+            </td>
+        </tr>
+        `;
+    });
+}
+
+async function deleteUser(id) {
+    if (!confirm("Delete this user?")) return;
+
+    const res = await apiRequest(`/users/${id}`, {
+        method: "DELETE"
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+        alert(data.detail);
+        return;
+    }
+
+    alert(data.msg);
+    loadUsers();
+}
+
+
+
+
+async function addOrUpdateProduct() {
+    const name = document.getElementById("name").value.trim();
+    const barcode = document.getElementById("barcode").value.trim();
+
+    const priceValue = document.getElementById("price").value;
+    const gstValue = document.getElementById("gst").value;
+    const stockValue = document.getElementById("stock").value;
+
+    const price = parseFloat(priceValue);
+    const gst = parseFloat(gstValue);
+    const stock = parseInt(stockValue);
+
+    // 🔥 Proper validation
+    if (!name || !barcode) {
+        alert("Name and Barcode required!");
+        return;
+    }
+
+    if (priceValue === "" || isNaN(price) || price <= 0) {
+        alert("Valid price required!");
+        return;
+    }
+
+    if (gstValue === "" || isNaN(gst) || gst < 0) {
+        alert("Valid GST required!");
+        return;
+    }
+
+    if (stockValue === "" || isNaN(stock) || stock < 0) {
+        alert("Valid stock required!");
+        return;
+    }
+
+    const product = { name, price, barcode, gst, stock };
+
+    // 👇 debug once
+    console.log(product);
+
+    let url = "/products";
+    let method = "POST";
+
+    if (editId !== null) {
+        url = `/products/${editId}`;
+        method = "PUT";
+    }
+
+    const res = await apiRequest(url, {
+        method: method,
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(product)
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+        alert(data.detail || "Something went wrong");
+        return;
+    }
+
+    document.getElementById("msg").innerText = data.msg || "Success";
+
+clearForm();
+loadProducts();
+}
+
+// 🔹 EDIT
+function editProduct(id, name, price, barcode, gst, stock) {
+    document.getElementById("name").value = name;
+    document.getElementById("price").value = price;
+    document.getElementById("barcode").value = barcode;
+    document.getElementById("gst").value = gst;
+    document.getElementById("stock").value = stock;
+
+    editId = id;
+}
+
+// 🔹 DELETE
+async function deleteProduct(id) {
+    if (!confirm("Delete this product?")) return;
+
+    const res = await apiRequest(`/products/${id}`, {
+        method: "DELETE",
+        
+    });
+
+    const data = await res.json();
+    alert(data.msg);
+
+    loadProducts();
+}
+
+// 🔹 CLEAR FORM
+function clearForm() {
+    document.getElementById("name").value = "";
+    document.getElementById("price").value = "";
+    document.getElementById("barcode").value = "";
+    document.getElementById("gst").value = "";
+    document.getElementById("stock").value = "";
+    editId = null;
+}
+
+function openUserModal() {
+    document.getElementById("userModal").style.display = "flex";
+    document.body.classList.add("modal-open");
+
+    // 🔥 clear user form
+    document.getElementById("u_username").value = "";
+    document.getElementById("u_password").value = "";
+
+    loadUsers();
+}
+
+function closeUserModal() {
+    const modal = document.getElementById("userModal");
+    modal.style.display = "none";
+    document.body.classList.remove("modal-open");
+}
+async function createUser() {
+    const username = document.getElementById("u_username").value;
+    const password = document.getElementById("u_password").value;
+    const role = document.getElementById("u_role").value;
+
+    if (!username || !password) {
+        alert("All fields required!");
+        return;
+    }
+
+    const res = await apiRequest("/users/create", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ username, password, role })
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+        alert(data.detail);
+        return;
+    }
+
+    alert(data.msg);
+
+    closeUserModal();
+    loadUsers();
+}
+
+
+// 🔹 LOGOUT
+async function logout() {
+    const refresh = localStorage.getItem("refresh_token");
+
+    await apiRequest("/auth/logout", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ refresh_token: refresh })
+    });
+
+    localStorage.clear();
+    window.location.href = "/";
+}
+
+loadProducts();
+document.addEventListener("DOMContentLoaded", () => {
+    clearForm();
+});
+</script>
+
+
+<div id="userModal" class="modal">
+    <div class="large-modal">
+        <div class="modal-header">
+            <h2>User Management</h2>
+            <button class="close-btn" onclick="closeUserModal()">×</button>
+        </div>
+
+        <div class="modal-form">
+            <input id="u_username" placeholder="Username">
+            <input id="u_password" type="password" placeholder="Password">
+            <select id="u_role">
+                <option value="staff">Staff</option>
+                <option value="admin">Admin</option>
+            </select>
+            <button class="primary-btn" onclick="createUser()" style="margin:0">Add</button>
+        </div>
+
+        <div class="modal-table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Username</th>
+                        <th>Role</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="usersList"></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+</div>
+</div>
+</div>
+</body>
+</html>

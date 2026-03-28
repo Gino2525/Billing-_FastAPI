@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invoice | My Store</title>
+    <link rel="stylesheet" href="/static/css/invoice.css">
+</head>
+<body onload="loadInvoice()">
+
+<div class="invoice-box">
+    <div class="brand-section">
+        <div class="store-info">
+            <h1>🛍️ My Store</h1>
+            <p>123 Business Avenue, Kerala, India</p>
+            <p><strong>GSTIN:</strong> 32ABCDE1234F1Z5</p>
+            <p><strong>Email:</strong> support@mystore.com</p>
+        </div>
+        <div class="meta-info text-right">
+            <h2 style="color:#4a90e2; margin-bottom: 10px;">INVOICE</h2>
+            <p><strong>Bill ID:</strong> <span id="billId">---</span></p>
+            <p><strong>Date:</strong> <span id="date">---</span></p>
+            <p><strong>Staff:</strong> <span id="staffName">---</span></p>
+        </div>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Product Description</th>
+                <th class="text-center">Price</th>
+                <th class="text-center">Qty</th>
+                <th class="text-center">GST %</th>
+                <th class="text-right">Total</th>
+            </tr>
+        </thead>
+        <tbody id="items">
+            </tbody>
+    </table>
+
+    <div class="summary-section">
+        <table class="total-table">
+            <tr>
+                <td>Subtotal:</td>
+                <td class="text-right">₹ <span id="subtotal">0.00</span></td>
+            </tr>
+            <tr>
+                <td>Total Tax:</td>
+                <td class="text-right">₹ <span id="taxTotal">0.00</span></td>
+            </tr>
+            <tr class="grand-total">
+                <td>Grand Total:</td>
+                <td class="text-right">₹ <span id="total">0.00</span></td>
+            </tr>
+        </table>
+    </div>
+
+    <div style="margin-top: 50px; text-align: center; color: #888; font-size: 13px;">
+        <p>This is a computer-generated invoice.</p>
+        <p><strong>Thank you for your business!</strong></p>
+    </div>
+</div>
+
+<div class="controls">
+    <a href="/dashboard" class="btn btn-back">← Back to Dashboard</a>
+    <button class="btn btn-print" onclick="window.print()">🖨️ Print Invoice</button>
+</div>
+
+<script src="/static/js/api.js"></script>
+<script>
+async function loadInvoice() {
+    const path = window.location.pathname;
+    const billId = path.split("/").pop();
+
+    document.getElementById("billId").innerText = billId;
+    document.getElementById("date").innerText = new Date().toLocaleDateString('en-IN', {
+        year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit'
+    });
+    
+
+    try {
+        const res = await apiRequest(`/billing/${billId}`);
+        if (!res.ok) throw new Error("Could not fetch data");
+        
+        const data = await res.json();
+        let itemsUI = document.getElementById("items");
+        document.getElementById("staffName").innerText = data.staff_name;
+        itemsUI.innerHTML = ""; 
+
+        let calculatedSubtotal = 0;
+        let calculatedTax = 0;
+
+        data.items.forEach(item => {
+            let base = item.price * item.quantity;
+            let tax = base * (item.gst / 100);
+            let total = base + tax;
+
+            calculatedSubtotal += base;
+            calculatedTax += tax;
+
+            itemsUI.innerHTML += `
+            <tr>
+                <td><strong>${item.name}</strong></td>
+                <td class="text-center">₹${item.price.toFixed(2)}</td>
+                <td class="text-center">${item.quantity}</td>
+                <td class="text-center">${item.gst}%</td>
+                <td class="text-right">₹${total.toFixed(2)}</td>
+            </tr>`;
+        });
+
+        document.getElementById("subtotal").innerText = calculatedSubtotal.toFixed(2);
+        document.getElementById("taxTotal").innerText = calculatedTax.toFixed(2);
+        document.getElementById("total").innerText = data.total.toFixed(2);
+
+    } catch (err) {
+        console.error(err);
+        alert("Error loading invoice details.");
+    }
+}
+</script>
+
+</body>
+</html>

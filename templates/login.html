@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | RetailPOS</title>
+    <link rel="stylesheet" href="/static/css/login.css">
+</head>
+<body>
+
+    <div class="login-card">
+        <h2>Welcome Back</h2>
+        <p class="subtitle">Please enter your credentials to continue</p>
+
+        <form id="loginForm" onsubmit="handleLogin(event)">
+            <div class="input-group">
+                <label>Username</label>
+                <input id="username" type="text" placeholder="Enter username" required autofocus>
+            </div>
+
+            <div class="input-group">
+                <label>Password</label>
+                <input id="password" type="password" placeholder="Enter password" required>
+            </div>
+
+            <button type="submit" id="loginBtn" class="login-btn">Secure Login</button>
+        </form>
+
+        <p id="msg"></p>
+    </div>
+
+    <script>
+        async function handleLogin(event) {
+            event.preventDefault(); // Prevents page reload
+            
+            const btn = document.getElementById("loginBtn");
+            const msg = document.getElementById("msg");
+            const usernameField = document.getElementById("username").value;
+            const passwordField = document.getElementById("password").value;
+
+            // 🔹 1. Visual Feedback (Loading State)
+            msg.innerText = "";
+            btn.disabled = true;
+            btn.innerText = "Authenticating...";
+
+            try {
+                const res = await fetch("/auth/login", {
+                    method: "POST",
+                    headers: {"Content-Type": "application/json"},
+                    body: JSON.stringify({
+                        username: usernameField,
+                        password: passwordField
+                    })
+                });
+
+                const result = await res.json();
+
+                if (res.ok && result.access_token) {
+                    // ✅ Store tokens securely
+                    localStorage.setItem("access_token", result.access_token);
+                    localStorage.setItem("refresh_token", result.refresh_token);
+
+                    // 🔹 Decode Role from JWT Payload
+                    const payload = JSON.parse(atob(result.access_token.split('.')[1]));
+
+                    // 🔀 Redirect based on role
+                    if (payload.role === "admin") {
+                        window.location.href = "/admin";
+                    } else {
+                        window.location.href = "/dashboard";
+                    }
+                } else {
+                    // ❌ Show server error
+                    msg.innerText = result.detail || "Invalid username or password";
+                    btn.disabled = false;
+                    btn.innerText = "Secure Login";
+                }
+            } catch (error) {
+                console.error("Login error:", error);
+                msg.innerText = "Network error. Please try again later.";
+                btn.disabled = false;
+                btn.innerText = "Secure Login";
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,129 @@
+/* 🔹 BASE STYLES */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
+}
+
+body {
+    background-color: #f9f9f9;
+    padding: 40px 20px;
+    color: #333;
+}
+
+/* 🔹 INVOICE CONTAINER */
+.invoice-box {
+    max-width: 850px;
+    margin: auto;
+    background: #fff;
+    padding: 40px;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    border: 1px solid #eee;
+}
+
+/* 🔹 HEADER SECTION */
+.brand-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 40px;
+    border-bottom: 2px solid #f4f4f4;
+    padding-bottom: 20px;
+}
+
+.brand-section h1 {
+    font-size: 28px;
+    color: #2c3e50;
+    margin-bottom: 5px;
+}
+
+.meta-info p {
+    font-size: 14px;
+    color: #666;
+    line-height: 1.6;
+}
+
+/* 🔹 TABLE STYLES */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 30px 0;
+}
+
+th {
+    background-color: #f8f9fa;
+    color: #555;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 12px;
+    letter-spacing: 0.5px;
+    padding: 15px;
+    border-bottom: 2px solid #eee;
+}
+
+td {
+    padding: 15px;
+    border-bottom: 1px solid #f1f1f1;
+    font-size: 14px;
+}
+
+.text-right { text-align: right; }
+.text-center { text-align: center; }
+
+/* 🔹 TOTALS SECTION */
+.summary-section {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 20px;
+}
+
+.total-table {
+    width: 250px;
+}
+
+.total-table tr td {
+    border: none;
+    padding: 8px 0;
+}
+
+.grand-total {
+    font-size: 20px;
+    font-weight: 800;
+    color: #2c3e50;
+    border-top: 2px solid #333 !important;
+    padding-top: 15px !important;
+}
+
+/* 🔹 ACTION BUTTONS (Hidden during print) */
+.controls {
+    max-width: 850px;
+    margin: 30px auto;
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+}
+
+.btn {
+    padding: 12px 25px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+    transition: 0.2s;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.btn-print { background: #2c3e50; color: white; }
+.btn-back { background: #e0e0e0; color: #333; }
+
+.btn:hover { opacity: 0.9; transform: translateY(-1px); }
+
+/* 🔹 PRINT OVERRIDES */
+@media print {
+    body { background: white; padding: 0; }
+    .invoice-box { box-shadow: none; border: none; width: 100%; max-width: 100%; }
+    .controls { display: none; }
+}

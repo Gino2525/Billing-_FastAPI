@@ -1,0 +1,307 @@
+/* 🔹 GLOBAL RESET */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Inter", -apple-system, sans-serif;
+}
+
+body {
+    background: #f5f7fb;
+    color: #333;
+    padding: 20px;
+    line-height: 1.5;
+}
+
+/* 🔥 DASHBOARD STYLES (Background) */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.header h2 {
+    font-size: 24px;
+    font-weight: 600;
+}
+
+.form-card, .table-card {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    margin-bottom: 20px;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 12px;
+}
+
+/* 🔹 REUSABLE COMPONENTS */
+input, select {
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    outline: none;
+    font-size: 14px;
+}
+
+input:focus, select:focus {
+    border-color: #4a90e2;
+}
+
+.primary-btn {
+    background: #4a90e2;
+    color: white;
+    border: none;
+    padding: 20px 180px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: 0.2s;
+    margin-top: 20px;
+}
+
+.primary-btn:hover { background: #357bd8; }
+
+.logout-btn {
+    background: #ff4d4f;
+    border: none;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+/* 🔹 TABLES */
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th, td {
+    padding: 12px;
+    text-align: left;
+    font-size: 14px;
+    border-bottom: 1px solid #eee;
+}
+
+th {
+    background: #fafafa;
+    font-weight: 600;
+    color: #555;
+}
+
+.action-btn {
+    padding: 6px 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+    margin-right: 4px;
+}
+
+.delete-btn { background: #d9534f; color: white; }
+.edit-btn { background: #f0ad4e; color: white; }
+
+/* ----------------------------------------------------------- */
+/* 🚀 TRUE POP-UP OVERLAY (USER MANAGEMENT) */
+/* ----------------------------------------------------------- */
+
+/* The Darkened Overlay */
+.modal {
+    display: none;        /* Hidden by default */
+    position: fixed;      /* Stays in place during scroll */
+    inset: 0;             /* Covers entire screen */
+    background: rgba(0, 0, 0, 0.6); 
+    backdrop-filter: blur(5px);    /* Blurs the dashboard behind it */
+    z-index: 9999;        /* Above everything else */
+    
+    /* Centering the Pop-up Box */
+    justify-content: center;
+    align-items: center;
+}
+
+/* The Floating Pop-up Box */
+.large-modal {
+    background: white;
+    width: 90%;
+    max-width: 850px;
+    max-height: 85vh;     /* Prevents box from being taller than screen */
+    border-radius: 12px;
+    padding: 30px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+    
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* Pop-up Animation */
+@keyframes popIn {
+    from { transform: scale(0.8); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+
+/* Modal Header */
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+}
+
+.modal-header h3 {
+    font-size: 22px;
+    font-weight: 700;
+}
+
+.modal-header .close-btn {
+    background: #f0f0f0;
+    border: none;
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 18px;
+    transition: 0.2s;
+}
+
+.modal-header .close-btn:hover {
+    background: #ff4d4f;
+    color: white;
+}
+
+/* Add User Form inside the Pop-up */
+.modal-form {
+    display: flex;
+    gap: 12px;
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+.modal-form input, .modal-form select {
+    flex: 1; /* Inputs grow to fill space */
+}
+
+/* Table Area inside the Pop-up (Scrollable) */
+.modal-table-container {
+    flex: 1;
+    overflow-y: auto;
+    border: 1px solid #eee;
+    border-radius: 8px;
+}
+
+/* Keep table headers visible while scrolling users */
+.modal-table-container thead th {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    background: #fdfdfd;
+}
+
+/* Prevent Background Scrolling when Pop-up is open */
+body.modal-open {
+    overflow: hidden;
+}
+
+#msg {
+    margin-top: 10px;
+    font-weight: 500;
+}
+
+/* 🔹 GLOBAL RESET */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Inter", -apple-system, sans-serif;
+}
+
+body {
+    background: #f5f7fb;
+    padding: 20px;
+}
+
+/* 🔹 DASHBOARD ELEMENTS */
+.header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+.form-card, .table-card { background: white; padding: 20px; border-radius: 10px; margin-bottom: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+.form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; }
+input, select { padding: 10px; border: 1px solid #ddd; border-radius: 6px; }
+
+.primary-btn { background: #4a90e2; color: white; border: none; padding: 10px 15px; border-radius: 6px; cursor: pointer; }
+.logout-btn { background: #ff4d4f; color: white; border: none; padding: 8px 15px; border-radius: 6px; cursor: pointer; }
+
+/* 🔹 THE OVERLAY (FORCING IT TO BE A POP-UP) */
+.modal {
+    display: none;          /* Toggle via JS */
+    position: fixed !important; /* Forces it to stay on screen */
+    top: 0 !important;
+    left: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    background: rgba(0, 0, 0, 0.7) !important; /* Dims dashboard */
+    backdrop-filter: blur(5px);
+    z-index: 99999 !important;  /* Higher than everything */
+    
+    /* Centering logic */
+    justify-content: center;
+    align-items: center;
+}
+
+/* 🔹 THE FLOATING BOX */
+.large-modal {
+    background: white;
+    width: 90%;
+    max-width: 800px;
+    max-height: 85vh;
+    border-radius: 15px;
+    padding: 25px;
+    box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+    display: flex;
+    flex-direction: column;
+    animation: popIn 0.3s ease-out;
+}
+
+@keyframes popIn {
+    from { transform: scale(0.9); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.modal-form {
+    display: flex;
+    gap: 10px;
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+.modal-table-wrapper {
+    flex: 1;
+    overflow-y: auto;
+    border: 1px solid #eee;
+    border-radius: 8px;
+}
+
+table { width: 100%; border-collapse: collapse; }
+th, td { padding: 12px; text-align: left; border-bottom: 1px solid #eee; }
+th { background: #fafafa; position: sticky; top: 0; }
+
+.close-btn { background: #eee; border: none; width: 30px; height: 30px; border-radius: 50%; cursor: pointer; }
+
+/* Stop background from scrolling */
+body.modal-open { overflow: hidden !important; }
