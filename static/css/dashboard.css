@@ -44,13 +44,12 @@ body {
     font-weight: 600;
 }
 
-/* 🔹 MAIN CONTENT LAYOUT */
 .dashboard-container {
     display: flex;
     gap: 20px;
     padding: 20px;
     flex: 1;
-    overflow: hidden;
+    overflow: auto;
 }
 
 /* 🔹 SEARCH & PRODUCTS AREA */
@@ -276,3 +275,32 @@ td {
     }
     
     }
+
+
+    @media (max-width: 768px) {
+
+        body {
+        height: auto;
+        overflow-y: auto;
+        }
+        
+        .dashboard-container {
+        flex-direction: column;
+        height: auto;
+        overflow: visible;
+        }
+        
+        .inventory-section {
+        min-height: 300px;
+        }
+        
+        .cart-section {
+            width: 450px;
+            max-width: 100%;
+        
+        .product-list {
+        max-height: none;
+        overflow: visible;
+        }
+        
+        }
