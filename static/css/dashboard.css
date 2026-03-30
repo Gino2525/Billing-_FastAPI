@@ -229,3 +229,50 @@ td {
     box-shadow: 0 0 0 4px rgba(74, 144, 226, 0.1);
     outline: none;
 }
+
+/* Mobile Responsive Fix */
+@media (max-width: 768px) {
+
+    .dashboard-container {
+        flex-direction: column !important;
+        padding: 10px;
+    }
+    
+    .inventory-section,
+    .cart-section {
+        width: 100% !important;
+    }
+    
+    .main-header {
+        flex-direction: column;
+        gap: 10px;
+        text-align: center;
+    }
+    
+    .search-group {
+        flex-direction: column;
+        gap: 8px;
+    }
+    
+    .search-group input {
+        width: 100%;
+    }
+    
+    .product-item {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .cart-table-wrapper {
+        overflow-x: auto;
+    }
+    
+    table {
+        min-width: 500px;
+    }
+    
+    .checkout-btn {
+        width: 100%;
+    }
+    
+    }
